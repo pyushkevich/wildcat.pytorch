@@ -3,7 +3,7 @@ import torch.nn as nn
 import torchvision.models as models
 import torch.nn.functional as F
 
-from wildcat_pytorch.wildcat.pooling import WildcatPool2d, ClassWisePool
+from ..wildcat.pooling import WildcatPool2d, ClassWisePool
 
 class double_conv(nn.Module):
     '''(conv => BN => ReLU) * 2'''
@@ -190,7 +190,8 @@ class ResNet18WSLUpsample(nn.Module):
 
 
 def resnet50_wildcat_upsample(num_classes, pretrained=True, kmax=1, kmin=None, alpha=1, num_maps=1):
-    model = models.resnet50(pretrained)
+    weights = models.ResNet50_Weights.DEFAULT if pretrained else None
+    model = models.resnet50(weights=weights)
     pooling = nn.Sequential()
     pooling.add_module('class_wise', ClassWisePool(num_maps))
     pooling.add_module('spatial', WildcatPool2d(kmax, kmin, alpha))
@@ -198,7 +199,8 @@ def resnet50_wildcat_upsample(num_classes, pretrained=True, kmax=1, kmin=None, a
 
 
 def resnet18_wildcat_upsample(num_classes, pretrained=True, kmax=1, kmin=None, alpha=1, num_maps=1):
-    model = models.resnet18(pretrained)
+    weights = models.ResNet18_Weights.DEFAULT if pretrained else None
+    model = models.resnet18(weights=weights)
     pooling = nn.Sequential()
     pooling.add_module('class_wise', ClassWisePool(num_maps))
     pooling.add_module('spatial', WildcatPool2d(kmax, kmin, alpha))
